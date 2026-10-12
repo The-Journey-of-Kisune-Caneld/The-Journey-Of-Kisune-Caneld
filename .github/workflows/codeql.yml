@@ -1,0 +1,45 @@
+name: "CodeQL"
+
+on:
+  schedule:
+    - cron: '0 2 * * 6'
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'game/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'game/**'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@9f759ee644a3e7c15c1390abf49868036c00067b
+      with:
+        languages: ${{ matrix.language }}
+        config: |
+          paths:
+            - game
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@9f759ee644a3e7c15c1390abf49868036c00067b
+      with:
+        category: "/language:${{ matrix.language }}"
